@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context path="/">
+    <Resource
+            name="jdbc/mysql"
+            type="javax.sql.DataSource"
+            username="syhrje10"
+            password="vtrol!Q2w3e"
+            driverClassName="com.mysql.cj.jdbc.Driver"
+            url="jdbc:mysql://kh.cvssgzojc9ja.ap-northeast-2.rds.amazonaws.com:3306/syhrje10_db"
+            initialSize="8"
+    />
+</Context>

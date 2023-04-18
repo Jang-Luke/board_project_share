@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="Maven: junit:junit:3.8.1">
+    <archive path="/Users/luke/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar" />
+  </library>
+  <library name="Maven: commons-logging:commons-logging:1.2">
+    <archive path="/Users/luke/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar" />
+  </library>
+  <library name="Maven: org.apache.commons:commons-pool2:2.10.0">
+    <archive path="/Users/luke/.m2/repository/org/apache/commons/commons-pool2/2.10.0/commons-pool2-2.10.0.jar" />
+  </library>
+  <library name="Maven: com.google.protobuf:protobuf-java:3.21.9">
+    <archive path="/Users/luke/.m2/repository/com/google/protobuf/protobuf-java/3.21.9/protobuf-java-3.21.9.jar" />
+  </library>
+  <library name="Maven: com.mysql:mysql-connector-j:8.0.32">
+    <archive path="/Users/luke/.m2/repository/com/mysql/mysql-connector-j/8.0.32/mysql-connector-j-8.0.32.jar" />
+  </library>
+  <library name="Maven: org.apache.commons:commons-dbcp2:2.9.0">
+    <archive path="/Users/luke/.m2/repository/org/apache/commons/commons-dbcp2/2.9.0/commons-dbcp2-2.9.0.jar" />
+  </library>
+  <library name="Maven: javax.servlet:javax.servlet-api:3.0.1">
+    <archive path="/Users/luke/.m2/repository/javax/servlet/javax.servlet-api/3.0.1/javax.servlet-api-3.0.1.jar" />
+  </library>
+  <library name="Maven: org.apache.tomcat:tomcat-juli:8.5.87">
+    <archive path="/Users/luke/.m2/repository/org/apache/tomcat/tomcat-juli/8.5.87/tomcat-juli-8.5.87.jar" />
+  </library>
+  <library name="Maven: org.apache.tomcat:tomcat-dbcp:8.5.87">
+    <archive path="/Users/luke/.m2/repository/org/apache/tomcat/tomcat-dbcp/8.5.87/tomcat-dbcp-8.5.87.jar" />
+  </library>
+  <library name="Maven: javax.servlet:jstl:1.2">
+    <archive path="/Users/luke/.m2/repository/javax/servlet/jstl/1.2/jstl-1.2.jar" />
+  </library>
+</eclipse-userlibraries>
+
