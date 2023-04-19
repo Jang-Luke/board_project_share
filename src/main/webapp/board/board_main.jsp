@@ -11,7 +11,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Document</title>
     <style>
@@ -87,15 +86,49 @@
                 </C:when>
             </C:choose>
         </div>
-        <div class="col-12 d-flex justify-content-end border-solid-1">
+        <div class="col-9 d-flex">
+            <form action="/search.board" id="searchForm">
+                <select name="searchBound" id="searchBound">
+                    <option value="title">제목</option>
+                    <option value="contents">내용</option>
+                    <option value="writer">작성자</option>
+                </select>
+                <input type="text" name="searchQuery" id="searchQuery" placeholder="검색할 내용을 입력해주세요.">
+                <button>검색</button>
+            </form>
+        </div>
+        <div class="col-3 d-flex justify-content-end">
             <a href="/board/writeForm2.jsp">
                 <button class="btn btn-outline-primary">작성하기</button>
             </a>
-            <a href="/board/writeForm2.jsp">
+            <a href="/index.jsp">
                 <button class="btn btn-light">메인으로</button>
             </a>
         </div>
     </div>
 </div>
+<script>
+    $('#searchForm').on('submit', (event, string) => {
+        const searchQuery = $('#searchQuery').val();
+        if (searchQuery === '') {
+            event.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: '검색할 단어를 입력해주세요.',
+                showConfirmButton: false,
+                timer: 800
+            });
+            return false;
+        } else if (searchQuery === '금지어') {
+            event.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: string + '은 검색할 수 없는 단어입니다.',
+                showConfirmButton: false,
+                timer: 800
+            })
+        }
+    })
+</script>
 </body>
 </html>

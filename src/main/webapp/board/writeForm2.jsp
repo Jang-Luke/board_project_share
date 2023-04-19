@@ -7,8 +7,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+<%--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">--%>
+<%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>--%>
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -55,9 +55,9 @@
         <div class="row boardFooter">
             <div class="col-12 d-flex justify-content-end border-solid-1">
                 <a href="/select.board?currentPage=1">
-                    <button>목록으로</button>
+                    <button type="button">목록으로</button>
                 </a>
-                <button id="doWrite">작성완료</button>
+                <button type="button" id="doWrite">작성완료</button>
             </div>
         </div>
     </div>
@@ -75,7 +75,16 @@
     });
     const inContents = document.querySelector('#inContents');
     $('#doWrite').on('click', function () {
-        $(this).closest('form').submit();
+        if ($('.note-editable').find('p').text() !== '' && $('#inTitle').val() !== '') {
+            $(this).closest('form').submit();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: '빈 값을 입력할 수 없습니다.',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
     });
 
 </script>

@@ -21,6 +21,7 @@ public class BoardController extends HttpServlet {
         String command = request.getRequestURI();
         System.out.println(command);
         try {
+            // 게시글 작성
             if (command.equals("/insert.board")) {
                 String writer = request.getParameter("inWriter");
                 String title = request.getParameter("inTitle");
@@ -28,7 +29,7 @@ public class BoardController extends HttpServlet {
                 BoardDTO newContents = new BoardDTO(0, writer, title, contents, 0, null);
                 int result = BoardDAO.getInstance().insertContent(newContents);
                 response.sendRedirect("/select.board?currentPage=1");
-
+            // 게시글 전체(리스트) 출력
             } else if (command.startsWith("/select.board")) { //items
                 BoardDAO boardDAO = BoardDAO.getInstance();
                 int currentPage = Integer.parseInt(request.getParameter("currentPage"));
@@ -46,7 +47,7 @@ public class BoardController extends HttpServlet {
                 request.setAttribute("navigatorPrevNextLength", boardNavigator.get(0).size());
 
                 request.getRequestDispatcher("/board/board_main.jsp").forward(request, response);
-
+            // 게시글 내용 출력
             } else if (command.startsWith("/viewTarget.board")) {
                 BoardDTO targetContent = getTarget(request);
                 targetContent = BoardDAO.getInstance().viewTargetContent(targetContent);
@@ -54,12 +55,12 @@ public class BoardController extends HttpServlet {
                 request.setAttribute("targetContent", targetContent);
                 request.setAttribute("targetReplies", targetReplies);
                 request.getRequestDispatcher("/board/content_view.jsp").forward(request,response);
-
+            // 게시글 삭제
             } else if (command.startsWith("/delete.board")) {
                 BoardDTO targetContent = getTarget(request);
                 int result = BoardDAO.getInstance().deleteContent(targetContent);
                 response.sendRedirect("/select.board?currentPage=1");
-
+            // 게시글 삭제
             } else if (command.startsWith("/modify.board")) {
                 long id = Long.parseLong(request.getParameter("id"));
                 String title = request.getParameter("modifyTitle");

@@ -18,6 +18,7 @@ public class ReplyController extends HttpServlet {
         String command = request.getRequestURI();
         System.out.println(command);
         try {
+            // 댓글 작성
             if (command.equals("/insert.reply")) {
                 MemberDTO loginID = (MemberDTO)request.getSession().getAttribute("loginKey");
                 String writer = loginID.getId();
@@ -25,7 +26,7 @@ public class ReplyController extends HttpServlet {
                 long parentId = Long.parseLong(request.getParameter("replyContentId"));
                 int result = ReplyDAO.getInstance().replyComment(new ReplyDTO(0, writer, contents, null, parentId));
                 response.sendRedirect("/viewTarget.board?id="+parentId);
-
+            // 댓글 수정
             } else if (command.equals("/modifyReply.reply")) {
                 long id = Long.parseLong(request.getParameter("modifyReplyId"));
                 String writer = request.getParameter("modifyWriter");
@@ -33,7 +34,7 @@ public class ReplyController extends HttpServlet {
                 long parentId = Long.parseLong(request.getParameter("modifyReplyContentId"));
                 int result = ReplyDAO.getInstance().modifyReply(new ReplyDTO(id, writer, contents, null, 0));
                 response.sendRedirect("/viewTarget.board?id="+parentId);
-
+            // 댓글 삭제
             } else if (command.equals("/deleteReply.reply")) {
                 long id = Long.parseLong(request.getParameter("deleteReplyId"));
                 long returnId = Long.parseLong(request.getParameter("returnId"));
