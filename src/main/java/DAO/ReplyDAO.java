@@ -27,7 +27,7 @@ public class ReplyDAO {
     }
 
     public int replyComment(ReplyDTO replyDTO) throws Exception {
-        String sql = "INSERT INTO REPLY VALUES(0, ?, ?, DEFAULT, ?)";
+        String sql = "INSERT INTO REPLY VALUES(0, ?, ?, DEFAULT, ?, DEFAULT)";
         try(Connection connection = basicDataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
             preparedStatement.setString(1, replyDTO.getWriter());
@@ -89,7 +89,16 @@ public class ReplyDAO {
         String contents = resultSet.getString("CONTENTS");
         Timestamp writeDate = resultSet.getTimestamp("WRITE_DATE");
         long parentId = resultSet.getLong("PARENT_ID");
-        return new ReplyDTO(id, writer, contents, writeDate, parentId);
+        int replyLikeCount = resultSet.getInt("REPLY_LIKE_COUNT");
+        return new ReplyDTO(id, writer, contents, writeDate, parentId, replyLikeCount);
     }
 
+    public void hitReplyCount(ReplyDTO replyDTO) throws Exception {
+        String sql = "UPDATE REPLY SET REPLY_LIKE_COUNT = REPLY_LIKE_COUNT + 1 WHERE ID = ?";
+        try(Connection connection = basicDataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setLong(1, replyDTO.getId());
+            preparedStatement.executeUpdate();
+        }
+    }
 }

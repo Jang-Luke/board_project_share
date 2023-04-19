@@ -24,7 +24,7 @@ public class ReplyController extends HttpServlet {
                 String writer = loginID.getId();
                 String contents = request.getParameter("replyContents");
                 long parentId = Long.parseLong(request.getParameter("replyContentId"));
-                int result = ReplyDAO.getInstance().replyComment(new ReplyDTO(0, writer, contents, null, parentId));
+                int result = ReplyDAO.getInstance().replyComment(new ReplyDTO(0, writer, contents, null, parentId, 0));
                 response.sendRedirect("/viewTarget.board?id="+parentId);
             // 댓글 수정
             } else if (command.equals("/modifyReply.reply")) {
@@ -32,14 +32,14 @@ public class ReplyController extends HttpServlet {
                 String writer = request.getParameter("modifyWriter");
                 String contents = request.getParameter("modifyReplyContents");
                 long parentId = Long.parseLong(request.getParameter("modifyReplyContentId"));
-                int result = ReplyDAO.getInstance().modifyReply(new ReplyDTO(id, writer, contents, null, 0));
+                int result = ReplyDAO.getInstance().modifyReply(new ReplyDTO(id, writer, contents, null, 0, 0));
                 response.sendRedirect("/viewTarget.board?id="+parentId);
             // 댓글 삭제
             } else if (command.equals("/deleteReply.reply")) {
                 long id = Long.parseLong(request.getParameter("deleteReplyId"));
                 long returnId = Long.parseLong(request.getParameter("returnId"));
                 System.out.println(id + returnId + "");
-                int result = ReplyDAO.getInstance().deleteReply(new ReplyDTO(id, "", "", null, 0));
+                int result = ReplyDAO.getInstance().deleteReply(new ReplyDTO(id, "", "", null, 0, 0));
                 response.sendRedirect("/viewTarget.board?id="+returnId);
             }
         } catch (Exception e) {

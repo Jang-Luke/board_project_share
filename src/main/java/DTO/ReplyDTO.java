@@ -8,17 +8,18 @@ public class ReplyDTO {
     private String contents;
     private Timestamp writeDate;
     private long parentId;
+    private int replyLikeCount;
 
     public ReplyDTO() {
     }
 
-    public ReplyDTO(long id, String writer, String contents, Timestamp writeDate, long parentId) {
-
+    public ReplyDTO(long id, String writer, String contents, Timestamp writeDate, long parentId, int replyLikeCount) {
         this.id = id;
         this.writer = writer;
         this.contents = contents;
         this.writeDate = writeDate;
         this.parentId = parentId;
+        this.replyLikeCount = replyLikeCount;
     }
 
     public long getId() {
@@ -59,5 +60,13 @@ public class ReplyDTO {
 
     public void setParentId(long parentId) {
         this.parentId = parentId;
+    }
+
+    public int getReplyLikeCount() {
+        return replyLikeCount;
+    }
+
+    public void setReplyLikeCount(int replyLikeCount) {
+        this.replyLikeCount = replyLikeCount;
     }
 }

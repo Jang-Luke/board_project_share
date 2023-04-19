@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("*.board")
@@ -29,7 +30,7 @@ public class BoardController extends HttpServlet {
                 BoardDTO newContents = new BoardDTO(0, writer, title, contents, 0, null);
                 int result = BoardDAO.getInstance().insertContent(newContents);
                 response.sendRedirect("/select.board?currentPage=1");
-            // 게시글 전체(리스트) 출력
+            // 게시글 출력
             } else if (command.startsWith("/select.board")) { //items
                 BoardDAO boardDAO = BoardDAO.getInstance();
                 int currentPage = Integer.parseInt(request.getParameter("currentPage"));
@@ -37,8 +38,22 @@ public class BoardController extends HttpServlet {
                 int start = currentPage * Settings.BOARD_RECORD_COUNT_PER_PAGE - (Settings.BOARD_RECORD_COUNT_PER_PAGE-1);
                 int end = currentPage * Settings.BOARD_RECORD_COUNT_PER_PAGE;
 
-                List<BoardDTO> contentsList = boardDAO.findAll(start, end);
-                List<List<String>> boardNavigator = boardDAO.getPageNavi(currentPage);
+                String searchBound = request.getParameter("searchBound");
+                String searchQuery = request.getParameter("searchQuery");
+                List<BoardDTO> contentsList = new ArrayList<>();
+                boolean isSearch = false;
+                int targetSize = 0;
+                if (searchBound == null && searchQuery == null) {
+                    contentsList = boardDAO.findAll(start, end);
+                } else {
+                    request.setAttribute("searchBound", searchBound);
+                    request.setAttribute("searchQuery", searchQuery);
+                    contentsList = boardDAO.searchContents(searchBound, searchQuery, start, end);
+                    isSearch = true;
+                    targetSize = boardDAO.getSearchContentsCount(searchBound, searchQuery);
+                }
+
+                List<List<String>> boardNavigator = boardDAO.getPageNavi(currentPage, isSearch, targetSize);
                 request.setAttribute("contentsList", contentsList);
                 request.setAttribute("length", contentsList.size());
                 request.setAttribute("navigatorNum", boardNavigator.get(1));
@@ -67,7 +82,6 @@ public class BoardController extends HttpServlet {
                 String content = request.getParameter("modifyContent");
                 int result = BoardDAO.getInstance().updateContent(new BoardDTO(id, null, title, content, 0, null));
                 response.sendRedirect("/viewTarget.board?id="+id);
-
             }
         } catch (Exception e) {
             e.printStackTrace();

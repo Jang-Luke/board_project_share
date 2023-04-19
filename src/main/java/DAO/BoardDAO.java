@@ -5,10 +5,7 @@ import commons.MyDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import statics.Settings;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +64,7 @@ public class BoardDAO {
 
     // 1. SELECT * FROM BOARD ORDER BY ID DESC
     public List<BoardDTO> findAll(int start, int end) throws Exception {
-        String sql = "SELECT * FROM (SELECT BOARD.*, ROW_NUMBER() OVER(ORDER BY ID ASC) \"NO\" FROM BOARD) NUM WHERE NO BETWEEN ? AND ?;";
+        String sql = "SELECT * FROM (SELECT BOARD.*, ROW_NUMBER() OVER(ORDER BY ID DESC) \"NO\" FROM BOARD) NUM WHERE NO BETWEEN ? AND ?";
         try(Connection connection = basicDataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
             preparedStatement.setInt(1, start);
@@ -78,6 +75,40 @@ public class BoardDAO {
                     contentsList.add(getContentsContainer(resultSet));
                 }
                 return contentsList;
+            }
+        }
+    }
+
+    public int getSearchContentsCount(String bound, String query) throws Exception {
+        String sql = "SELECT * FROM (SELECT BOARD.*, ROW_NUMBER() OVER(ORDER BY ID DESC) \"NO\" FROM BOARD WHERE " + bound + " LIKE ?) NUM";
+        try(Connection connection = basicDataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setString(1, "%"+query+"%");
+            try(ResultSet resultSet = preparedStatement.executeQuery();){
+                int searchContentsCount = 0;
+                while(resultSet.next()){
+                    if (resultSet.isLast()) {
+                        searchContentsCount = resultSet.getRow();
+                    }
+                }
+                return searchContentsCount;
+            }
+        }
+    }
+    public List<BoardDTO> searchContents(String bound, String query, int start, int end) throws Exception {
+        String sql = "SELECT * FROM (SELECT BOARD.*, ROW_NUMBER() OVER(ORDER BY ID DESC) \"NO\" FROM BOARD WHERE " + bound + " LIKE ?) NUM WHERE NO BETWEEN ? AND ?";
+
+        try(Connection connection = basicDataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setString(1, "%"+query+"%");
+            preparedStatement.setInt(2, start);
+            preparedStatement.setInt(3, end);
+            try(ResultSet resultSet = preparedStatement.executeQuery();){
+                List<BoardDTO> searchResult = new ArrayList<>();
+                while(resultSet.next()){
+                    searchResult.add(getContentsContainer(resultSet));
+                }
+                return searchResult;
             }
         }
     }
@@ -141,10 +172,14 @@ public class BoardDAO {
         return new BoardDTO(id, writer, title, contents, view_count, write_date);
     }
 
-    public List<List<String>> getPageNavi(int currentPage) throws Exception {
+    public List<List<String>> getPageNavi(int currentPage, boolean isSearch, int targetSize) throws Exception {
         // 네비게이터를 만들기 위해 필요한 초기 정보
-        String sql = "SELECT COUNT(*) FROM BOARD";
-        int recordTotalCount = getRecordCount(); // 1. 전체 글의 개수
+        int recordTotalCount;
+        if (!isSearch) {
+            recordTotalCount = findAll().size(); // 1. 전체 글의 개수
+        } else {
+            recordTotalCount = targetSize == 0 ? 1 : targetSize;
+        }
         // Settings.BOARD_RECORD_COUNT_PER_PAGE // 2. 페이지 당 보여줄 글의 개수
         // Settings.BOARD_NAVI_COUNT_PER_PAGE // 3. 페이지 당 보여줄 네비게이터의 개수
 
@@ -190,4 +225,5 @@ public class BoardDAO {
         navigators.add(naviNumbers);
         return navigators;
     }
+
 }

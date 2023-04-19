@@ -43,6 +43,12 @@
         .replyBody {
             word-wrap: break-word;
         }
+        .btn{
+            align-self: center;
+            min-width: 70px;
+            padding: 6px;
+            font-size: 10pt;
+        }
     </style>
 </head>
 <body>
@@ -95,7 +101,7 @@
                 <div class="col-12">
                     <p class="d-flex justify-content-between">
                         <em style="border-bottom: 1px dotted gray;">${i.writer}</em>
-                        <span>| ${i.writeDate}</span>
+                        <span> | ${i.writeDate}</span>
                     </p>
                 </div>
                 <div class="col-12">
@@ -120,14 +126,15 @@
            class="hidden">
     <div class="container">
         <div class="row">
-            <div class="col-10">
+            <div class="col-12 d-flex justify-content-between">
                 <textarea name="replyContents" id="replyContents" class="form-control"></textarea>
-            </div>
-            <div class="col-2 d-flex">
                 <button type="button" id="replyButton" class="btn btn-outline-primary align-self-center">
                     등록하기
                 </button>
             </div>
+<%--            <div class="col-2 d-flex justify-content-end">--%>
+
+<%--            </div>--%>
         </div>
     </div>
 </form>

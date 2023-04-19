@@ -39,6 +39,20 @@
         .navi{
             margin: 1px 3px 1px 3px;
         }
+        .btn{
+            align-self: center;
+            min-width: 50px;
+            padding: 6px;
+            font-size: 10pt;
+        }
+
+        .form-select{
+            max-width: 100px;
+            font-size: 10pt;
+        }
+        .form-control{
+            font-size: 10pt;
+        }
     </style>
 </head>
 <body>
@@ -71,33 +85,54 @@
     </div>
     <div class="row boardFooter">
         <div class="col-12 d-flex justify-content-center">
-            <C:if test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 0 && requestScope.navigatorPrevNext[0] == '<< '}">
-                <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorNum[0]-1}">${requestScope.navigatorPrevNext[0]}</a></span>
-            </C:if>
-            <C:forEach var="navi" items="${requestScope.navigatorNum}">
-                <span class="navi"><a href="/select.board?currentPage=${navi}">${navi}</a></span>
-            </C:forEach>
             <C:choose>
-                <C:when test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 0 && requestScope.navigatorPrevNext[0] == '>>'}">
-                    <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorLast+1}">${requestScope.navigatorPrevNext[0]}</a></span>
+                <C:when test="${empty requestScope.searchQuery}">
+                    <C:if test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 0 && requestScope.navigatorPrevNext[0] == '<< '}">
+                        <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorNum[0]-1}">${requestScope.navigatorPrevNext[0]}</a></span>
+                    </C:if>
+                    <C:forEach var="navi" items="${requestScope.navigatorNum}">
+                        <span class="navi"><a href="/select.board?currentPage=${navi}">${navi}</a></span>
+                    </C:forEach>
+                    <C:choose>
+                        <C:when test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 0 && requestScope.navigatorPrevNext[0] == '>>'}">
+                            <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorLast+1}">${requestScope.navigatorPrevNext[0]}</a></span>
+                        </C:when>
+                        <C:when test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 1 && requestScope.navigatorPrevNext[1] == '>>'}">
+                            <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorLast+1}">${requestScope.navigatorPrevNext[1]}</a></span>
+                        </C:when>
+                    </C:choose>
                 </C:when>
-                <C:when test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 1 && requestScope.navigatorPrevNext[1] == '>>'}">
-                    <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorLast+1}">${requestScope.navigatorPrevNext[1]}</a></span>
-                </C:when>
+                <C:otherwise>
+                    <C:if test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 0 && requestScope.navigatorPrevNext[0] == '<< '}">
+                        <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorNum[0]-1}&searchBound=${requestScope.searchBound}&searchQuery=${requestScope.searchQuery}">${requestScope.navigatorPrevNext[0]}</a></span>
+                    </C:if>
+                    <C:forEach var="navi" items="${requestScope.navigatorNum}">
+                        <span class="navi"><a href="/select.board?currentPage=${navi}&searchBound=${requestScope.searchBound}&searchQuery=${requestScope.searchQuery}">${navi}</a></span>
+                    </C:forEach>
+                    <C:choose>
+                        <C:when test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 0 && requestScope.navigatorPrevNext[0] == '>>'}">
+                            <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorLast+1}&searchBound=${requestScope.searchBound}&searchQuery=${requestScope.searchQuery}">${requestScope.navigatorPrevNext[0]}</a></span>
+                        </C:when>
+                        <C:when test="${not empty requestScope.navigatorPrevNext && requestScope.navigatorPrevNextLength > 1 && requestScope.navigatorPrevNext[1] == '>>'}">
+                            <span class="navi"><a href="/select.board?currentPage=${requestScope.navigatorLast+1}&searchBound=${requestScope.searchBound}&searchQuery=${requestScope.searchQuery}">${requestScope.navigatorPrevNext[1]}</a></span>
+                        </C:when>
+                    </C:choose>
+                </C:otherwise>
             </C:choose>
         </div>
-        <div class="col-9 d-flex">
-            <form action="/search.board" id="searchForm">
-                <select name="searchBound" id="searchBound">
-                    <option value="title">제목</option>
-                    <option value="contents">내용</option>
-                    <option value="writer">작성자</option>
+        <div class="col-10">
+            <form action="/select.board" id="searchForm" class="d-flex">
+                <input type="hidden" name="currentPage" value="1">
+                <select name="searchBound" id="searchBound" class="form-select">
+                    <option value="TITLE">제목</option>
+                    <option value="CONTENTS">내용</option>
+                    <option value="WRITER">작성자</option>
                 </select>
-                <input type="text" name="searchQuery" id="searchQuery" placeholder="검색할 내용을 입력해주세요.">
-                <button>검색</button>
+                <input type="text" name="searchQuery" id="searchQuery" class="form-control" placeholder="검색할 내용을 입력해주세요.">
+                <button class="btn btn-dark">검색</button>
             </form>
         </div>
-        <div class="col-3 d-flex justify-content-end">
+        <div class="col-2 d-flex justify-content-end">
             <a href="/board/writeForm2.jsp">
                 <button class="btn btn-outline-primary">작성하기</button>
             </a>

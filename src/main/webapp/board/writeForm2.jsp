@@ -7,8 +7,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<%--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">--%>
-<%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>--%>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -28,6 +28,12 @@
             font-weight: bold;
             text-align: center;
         }
+        .btn{
+            align-self: center;
+            min-width: 50px;
+            padding: 6px;
+            font-size: 10pt;
+        }
     </style>
 </head>
 <body>
@@ -39,7 +45,7 @@
                 <p class="font-size-title">게시글 작성하기</p>
             </div>
             <div class="col-12 border-solid-1">
-                <input type="text" name="inWriter" id="inWriter" class="hidden" value="${sessionScope.loginKey.id}">
+                <input type="hidden" name="inWriter" id="inWriter" class="hidden" value="${sessionScope.loginKey.id}">
                 <input type="text" name="inTitle" id="inTitle" class="form-control" placeholder="글 제목을 입력하세요">
                 <%--            <input type="text" name="inContents" id="inContents" class="hidden">--%>
             </div>
@@ -55,9 +61,9 @@
         <div class="row boardFooter">
             <div class="col-12 d-flex justify-content-end border-solid-1">
                 <a href="/select.board?currentPage=1">
-                    <button type="button">목록으로</button>
+                    <button type="button" class="btn btn-outline-secondary">돌아가기</button>
                 </a>
-                <button type="button" id="doWrite">작성완료</button>
+                <button type="button" id="doWrite" class="btn btn-outline-primary">작성완료</button>
             </div>
         </div>
     </div>
