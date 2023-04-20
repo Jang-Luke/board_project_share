@@ -70,8 +70,8 @@ public class ReplyDAO {
     }
 
     private List<ReplyDTO> findAllReply() throws Exception {
-//        String sql = "SELECT R.*, (SELECT COUNT(*) FROM REPLY_LIKE_LIST WHERE REPLY_ID = R.ID) AS LC FROM REPLY R";
-        String sql = "SELECT * FROM REPLY";
+        String sql = "SELECT R.*, (SELECT COUNT(*) FROM REPLY_LIKE_LIST WHERE REPLY_ID = R.ID) AS LIKE_COUNT FROM REPLY R";
+//        String sql = "SELECT * FROM REPLY";
         try(Connection connection = basicDataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
             try(ResultSet resultSet = preparedStatement.executeQuery();){
@@ -89,8 +89,8 @@ public class ReplyDAO {
         String contents = resultSet.getString("CONTENTS");
         Timestamp writeDate = resultSet.getTimestamp("WRITE_DATE");
         long parentId = resultSet.getLong("PARENT_ID");
-        int replyLikeCount = resultSet.getInt("REPLY_LIKE_COUNT");
-        return new ReplyDTO(id, writer, contents, writeDate, parentId, replyLikeCount);
+        int likeCount = resultSet.getInt("LIKE_COUNT");
+        return new ReplyDTO(id, writer, contents, writeDate, parentId, likeCount);
     }
 
     public boolean hitReplyLike(ReplyDTO replyDTO, String memberId) throws Exception {
@@ -98,11 +98,9 @@ public class ReplyDAO {
         boolean result = false;
         if (isUserHitLikeBefore(replyDTO, memberId)) {
             deleteMemberIdLikeList(replyDTO.getId(), memberId);
-            sql = "UPDATE REPLY SET REPLY_LIKE_COUNT = REPLY_LIKE_COUNT - 1 WHERE ID = ?";
             result = false;
         } else {
             insertMemberIdLikeList(replyDTO, memberId);
-            sql = "UPDATE REPLY SET REPLY_LIKE_COUNT = REPLY_LIKE_COUNT + 1 WHERE ID = ?";
             result = true;
         }
         try(Connection connection = basicDataSource.getConnection();

@@ -121,7 +121,7 @@
                 </div>
                 <div class="col-7">
                     <p class="d-flex justify-content-end">
-                        <span class="likeCount">${i.replyLikeCount}</span><span> | ${i.writeDate}</span>
+                        <span class="likeCount">${i.likeCount}</span><span> | ${i.writeDate}</span>
                     </p>
                 </div>
                 <div class="col-12">
