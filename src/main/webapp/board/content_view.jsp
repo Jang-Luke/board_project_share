@@ -43,22 +43,26 @@
         .replyBody {
             word-wrap: break-word;
         }
-        .btn{
+
+        .btn {
             align-self: center;
             min-width: 70px;
             padding: 6px;
             font-size: 10pt;
         }
+
         .likeButton {
             width: 35px;
             height: 35px;
             border-radius: 5px;
             background-color: #a0dbb7;
         }
-        .likeButton:hover{
+
+        .likeButton:hover {
             cursor: pointer;
         }
-        .liked{
+
+        .liked {
             background-color: cyan;
         }
     </style>
@@ -102,7 +106,7 @@
 </form>
 <hr>
 <br>
-<C:forEach var="i" items="${requestScope.targetReplies}">
+<C:forEach var="i" items="${requestScope.targetReplies}" varStatus="status">
     <form action="/modifyReply.reply" method="post">
         <input type="text" name="modifyReplyId" class="replyId hidden" value="${i.id}">
         <input type="text" name="modifyReplyWriter" class="hidden" value="${i.writer}">
@@ -123,20 +127,21 @@
                 <div class="col-12">
                     <div class="replyBody">${i.contents}</div>
                 </div>
-                    <div class="col-12 d-flex justify-content-end">
-                <C:if test="${i.writer==sessionScope.loginKey.id}">
+                <div class="col-12 d-flex justify-content-end">
+                    <C:if test="${i.writer==sessionScope.loginKey.id}">
                         <button type="button" class="btn btn-outline-warning modifyReply">수정</button>
                         <button type="button" class="btn btn-outline-danger deleteReply">삭제</button>
                         <button type="button" class="btn btn-outline-dark modifyReplyConfirm hidden">확인</button>
                         <button type="button" class="btn btn-outline-secondary modifyReplyCancel hidden">취소</button>
-                </C:if>
-<%--                        TODO: 내가 좋아요를 이미 눌렀으면 liked 클래스 부여 --%>
-                <C:if test="${requestScope.liked=='true'}">
-                    <div class="likeButton d-flex justify-content-center align-items-center liked">✅</div>
-                </C:if>
-                <C:if test="${requestScope.liked=='false'}">
-                    <div class="likeButton d-flex justify-content-center align-items-center">👍</div>
-                </C:if>
+                    </C:if>
+                    <C:choose>
+                        <C:when test="${requestScope.liked[status.index]=='true'}">
+                            <div class="likeButton d-flex justify-content-center align-items-center liked">✅</div>
+                        </C:when>
+                        <C:otherwise>
+                            <div class="likeButton d-flex justify-content-center align-items-center">👍</div>
+                        </C:otherwise>
+                    </C:choose>
                 </div>
             </div>
         </div>
@@ -155,9 +160,9 @@
                     등록하기
                 </button>
             </div>
-<%--            <div class="col-2 d-flex justify-content-end">--%>
+            <%--            <div class="col-2 d-flex justify-content-end">--%>
 
-<%--            </div>--%>
+            <%--            </div>--%>
         </div>
     </div>
 </form>
@@ -214,27 +219,30 @@
             })
         }
     })
-    $('.deleteReply').on('click', function(){
+    $('.deleteReply').on('click', function () {
         const deleteId = $(this).closest('form').find('.replyId').val();
         const returnId = $('#replyContentId').val();
         location.href = "/deleteReply.reply?deleteReplyId=" + deleteId + "&returnId=" + returnId;
     })
-    $('.likeButton').on('click', function(){
+    $('.likeButton').on('click', function () {
         const targetId = $(this).closest('form').find('.replyId').val();
         let likeCount = parseInt($(this).closest('.row').find('.likeCount').text());
         const target = $(this).closest('.row').find('.likeCount');
         $(this).toggleClass('liked');
         if ($(this).hasClass('liked')) {
             $(this).html('✅');
-        } else{
+        } else {
             $(this).html('👍');
         }
         $.ajax({
             url: "/hitReplyLike.reply",
             method: "POST",
-            data: {replyId: targetId, loginId: "${sessionScope.loginKey.id}"},
+            data: {replyId: targetId,
+                loginId: "${sessionScope.loginKey.id}",
+                boardId: "${requestScope.targetContent.id}"
+            },
             dataType: "json"
-        }).done(function(result){
+        }).done(function (result) {
             const resultJSON = $.parseJSON(result);
             if (resultJSON.result === 'add') {
                 target.text(likeCount + 1);
@@ -244,7 +252,7 @@
                 console.log("done : subtract");
             }
             console.log("done : end");
-        }).fail(function(){
+        }).fail(function () {
             console.log("fail");
             Swal.fire({
                 icon: '',

@@ -42,11 +42,13 @@ public class ReplyController extends HttpServlet {
                 System.out.println(id + returnId + "");
                 int result = ReplyDAO.getInstance().deleteReply(new ReplyDTO(id, "", "", null, 0, 0));
                 response.sendRedirect("/viewTarget.board?id="+returnId);
+            // 좋아요 누름
             } else if (command.equals("/hitReplyLike.reply")) {
                 response.setContentType("application/json");
                 long id = Long.parseLong(request.getParameter("replyId"));
                 String memberId = request.getParameter("loginId");
-                ReplyDTO targetReply = new ReplyDTO(id, "", "", null, 0, 0);
+                long parentId = Long.parseLong(request.getParameter("boardId"));
+                ReplyDTO targetReply = new ReplyDTO(id, "", "", null, parentId, 0);
                 String jsonResult;
                 if (ReplyDAO.getInstance().hitReplyLike(targetReply, memberId)) {
                     jsonResult = new Gson().toJson("{\"result\": \"add\"}");

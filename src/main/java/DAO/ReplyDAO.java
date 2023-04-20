@@ -70,6 +70,7 @@ public class ReplyDAO {
     }
 
     private List<ReplyDTO> findAllReply() throws Exception {
+//        String sql = "SELECT R.*, (SELECT COUNT(*) FROM REPLY_LIKE_LIST WHERE REPLY_ID = R.ID) AS LC FROM REPLY R";
         String sql = "SELECT * FROM REPLY";
         try(Connection connection = basicDataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
@@ -113,7 +114,7 @@ public class ReplyDAO {
         }
     }
     public boolean isUserHitLikeBefore(ReplyDTO replyDTO, String memberId) throws Exception {
-        String sql = "SELECT R.ID, RL.MEMBER_ID, R.PARENT_ID FROM REPLY R RIGHT OUTER JOIN REPLY_LIKE_LIST RL ON R.ID = RL.REPLY_ID WHERE ID = ? MEMBER_ID = ? AND PARENT_ID = ?";
+        String sql = "SELECT R.ID, RL.MEMBER_ID, R.PARENT_ID FROM REPLY R RIGHT OUTER JOIN REPLY_LIKE_LIST RL ON R.ID = RL.REPLY_ID WHERE ID = ? AND MEMBER_ID = ? AND PARENT_ID = ?";
 //        String sql = "SELECT * FROM REPLY_LIKE_LIST WHERE MEMBER_ID = ? AND REPLY_ID = ?";
         try(Connection connection = basicDataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
@@ -126,7 +127,7 @@ public class ReplyDAO {
         }
     }
     private void insertMemberIdLikeList(ReplyDTO replyDTO, String memberId) throws Exception {
-        String sql = "INSERT INTO REPLY_LIKE_LIST VALUES(?, ?)";
+        String sql = "INSERT INTO REPLY_LIKE_LIST VALUES(0, ?, ?)";
         try(Connection connection = basicDataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
             preparedStatement.setLong(1, replyDTO.getId());
