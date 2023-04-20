@@ -3,6 +3,7 @@ package controllers;
 import DAO.BoardDAO;
 import DAO.ReplyDAO;
 import DTO.BoardDTO;
+import DTO.MemberDTO;
 import DTO.ReplyDTO;
 import statics.Settings;
 
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet("*.board")
 public class BoardController extends HttpServlet {
@@ -69,6 +71,19 @@ public class BoardController extends HttpServlet {
                 List<ReplyDTO> targetReplies = ReplyDAO.getInstance().findReplyByParentId(targetContent);
                 request.setAttribute("targetContent", targetContent);
                 request.setAttribute("targetReplies", targetReplies);
+
+                MemberDTO loginKey = (MemberDTO)request.getSession().getAttribute("loginKey");
+                List<String> likedLog = targetReplies.stream()
+                        .map((reply) -> {
+                            try {
+                                return String.valueOf(ReplyDAO.getInstance().isUserHitLikeBefore(reply, loginKey.getId()));
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).collect(Collectors.toList());
+//                boolean isLiked = ReplyDAO.getInstance().isUserHitLikeBefore(, loginKey.getId());
+                request.setAttribute("liked", likedLog);
+
                 request.getRequestDispatcher("/board/content_view.jsp").forward(request,response);
             // 게시글 삭제
             } else if (command.startsWith("/delete.board")) {

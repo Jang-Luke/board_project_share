@@ -49,6 +49,18 @@
             padding: 6px;
             font-size: 10pt;
         }
+        .likeButton {
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            background-color: #a0dbb7;
+        }
+        .likeButton:hover{
+            cursor: pointer;
+        }
+        .liked{
+            background-color: cyan;
+        }
     </style>
 </head>
 <body>
@@ -98,23 +110,34 @@
         <input type="text" name="modifyReplyContentId" value="${requestScope.targetContent.id}" class="hidden">
         <div class="container">
             <div class="row">
-                <div class="col-12">
-                    <p class="d-flex justify-content-between">
-                        <em style="border-bottom: 1px dotted gray;">${i.writer}</em>
-                        <span> | ${i.writeDate}</span>
+                <div class="col-5">
+                    <p class="d-flex">
+                        <em style="border-bottom: 1px dotted gray;" class="align-self-start">${i.writer}</em>
+                    </p>
+                </div>
+                <div class="col-7">
+                    <p class="d-flex justify-content-end">
+                        <span class="likeCount">${i.replyLikeCount}</span><span> | ${i.writeDate}</span>
                     </p>
                 </div>
                 <div class="col-12">
                     <div class="replyBody">${i.contents}</div>
                 </div>
-                <C:if test="${i.writer==sessionScope.loginKey.id}">
                     <div class="col-12 d-flex justify-content-end">
+                <C:if test="${i.writer==sessionScope.loginKey.id}">
                         <button type="button" class="btn btn-outline-warning modifyReply">수정</button>
                         <button type="button" class="btn btn-outline-danger deleteReply">삭제</button>
                         <button type="button" class="btn btn-outline-dark modifyReplyConfirm hidden">확인</button>
                         <button type="button" class="btn btn-outline-secondary modifyReplyCancel hidden">취소</button>
-                    </div>
                 </C:if>
+<%--                        TODO: 내가 좋아요를 이미 눌렀으면 liked 클래스 부여 --%>
+                <C:if test="${requestScope.liked=='true'}">
+                    <div class="likeButton d-flex justify-content-center align-items-center liked">✅</div>
+                </C:if>
+                <C:if test="${requestScope.liked=='false'}">
+                    <div class="likeButton d-flex justify-content-center align-items-center">👍</div>
+                </C:if>
+                </div>
             </div>
         </div>
     </form>
@@ -195,6 +218,41 @@
         const deleteId = $(this).closest('form').find('.replyId').val();
         const returnId = $('#replyContentId').val();
         location.href = "/deleteReply.reply?deleteReplyId=" + deleteId + "&returnId=" + returnId;
+    })
+    $('.likeButton').on('click', function(){
+        const targetId = $(this).closest('form').find('.replyId').val();
+        let likeCount = parseInt($(this).closest('.row').find('.likeCount').text());
+        const target = $(this).closest('.row').find('.likeCount');
+        $(this).toggleClass('liked');
+        if ($(this).hasClass('liked')) {
+            $(this).html('✅');
+        } else{
+            $(this).html('👍');
+        }
+        $.ajax({
+            url: "/hitReplyLike.reply",
+            method: "POST",
+            data: {replyId: targetId, loginId: "${sessionScope.loginKey.id}"},
+            dataType: "json"
+        }).done(function(result){
+            const resultJSON = $.parseJSON(result);
+            if (resultJSON.result === 'add') {
+                target.text(likeCount + 1);
+                console.log("done : add");
+            } else if (resultJSON.result === 'subtract') {
+                target.text(likeCount - 1);
+                console.log("done : subtract");
+            }
+            console.log("done : end");
+        }).fail(function(){
+            console.log("fail");
+            Swal.fire({
+                icon: '',
+                title: '오류가 발생하였습니다.',
+                showConfirmButton: false,
+                timer: 600
+            })
+        });
     })
 </script>
 </body>

@@ -9,7 +9,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ReplyDAO {
     private final BasicDataSource basicDataSource;
@@ -26,7 +25,7 @@ public class ReplyDAO {
         this.basicDataSource = basicDataSource;
     }
 
-    public int replyComment(ReplyDTO replyDTO) throws Exception {
+    public int insertReply(ReplyDTO replyDTO) throws Exception {
         String sql = "INSERT INTO REPLY VALUES(0, ?, ?, DEFAULT, ?, DEFAULT)";
         try(Connection connection = basicDataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
@@ -93,12 +92,57 @@ public class ReplyDAO {
         return new ReplyDTO(id, writer, contents, writeDate, parentId, replyLikeCount);
     }
 
-    public void hitReplyCount(ReplyDTO replyDTO) throws Exception {
-        String sql = "UPDATE REPLY SET REPLY_LIKE_COUNT = REPLY_LIKE_COUNT + 1 WHERE ID = ?";
+    public boolean hitReplyLike(ReplyDTO replyDTO, String memberId) throws Exception {
+        String sql = "";
+        boolean result = false;
+        if (isUserHitLikeBefore(replyDTO, memberId)) {
+            deleteMemberIdLikeList(replyDTO.getId(), memberId);
+            sql = "UPDATE REPLY SET REPLY_LIKE_COUNT = REPLY_LIKE_COUNT - 1 WHERE ID = ?";
+            result = false;
+        } else {
+            insertMemberIdLikeList(replyDTO, memberId);
+            sql = "UPDATE REPLY SET REPLY_LIKE_COUNT = REPLY_LIKE_COUNT + 1 WHERE ID = ?";
+            result = true;
+        }
         try(Connection connection = basicDataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
             preparedStatement.setLong(1, replyDTO.getId());
             preparedStatement.executeUpdate();
+            connection.commit();
+            return result;
+        }
+    }
+    public boolean isUserHitLikeBefore(ReplyDTO replyDTO, String memberId) throws Exception {
+        String sql = "SELECT R.ID, RL.MEMBER_ID, R.PARENT_ID FROM REPLY R RIGHT OUTER JOIN REPLY_LIKE_LIST RL ON R.ID = RL.REPLY_ID WHERE ID = ? MEMBER_ID = ? AND PARENT_ID = ?";
+//        String sql = "SELECT * FROM REPLY_LIKE_LIST WHERE MEMBER_ID = ? AND REPLY_ID = ?";
+        try(Connection connection = basicDataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setLong(1, replyDTO.getId());
+            preparedStatement.setString(2, memberId);
+            preparedStatement.setLong(3, replyDTO.getParentId());
+            try(ResultSet resultSet = preparedStatement.executeQuery();){
+                return resultSet.next();
+            }
+        }
+    }
+    private void insertMemberIdLikeList(ReplyDTO replyDTO, String memberId) throws Exception {
+        String sql = "INSERT INTO REPLY_LIKE_LIST VALUES(?, ?)";
+        try(Connection connection = basicDataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setLong(1, replyDTO.getId());
+            preparedStatement.setString(2, memberId);
+            preparedStatement.executeUpdate();
+            connection.commit();
+        }
+    }
+    private void deleteMemberIdLikeList(long replyId, String memberId) throws Exception {
+        String sql = "DELETE FROM REPLY_LIKE_LIST WHERE REPLY_ID = ? AND MEMBER_ID = ?";
+        try(Connection connection = basicDataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setLong(1, replyId);
+            preparedStatement.setString(2, memberId);
+            preparedStatement.executeUpdate();
+            connection.commit();
         }
     }
 }
