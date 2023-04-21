@@ -227,13 +227,14 @@
     $('.likeButton').on('click', function () {
         const targetId = $(this).closest('form').find('.replyId').val();
         let likeCount = parseInt($(this).closest('.row').find('.likeCount').text());
-        const target = $(this).closest('.row').find('.likeCount');
-        $(this).toggleClass('liked');
-        if ($(this).hasClass('liked')) {
-            $(this).html('✅');
-        } else {
-            $(this).html('👍');
-        }
+        const targetCount = $(this).closest('.row').find('.likeCount');
+        const target = $(this);
+        // $(this).toggleClass('liked');
+        // if ($(this).hasClass('liked')) {
+        //     $(this).html('✅');
+        // } else {
+        //     $(this).html('👍');
+        // }
         $.ajax({
             url: "/hitReplyLike.reply",
             method: "POST",
@@ -245,15 +246,13 @@
         }).done(function (result) {
             const resultJSON = $.parseJSON(result);
             if (resultJSON.result === 'add') {
-                target.text(likeCount + 1);
-                console.log("done : add");
+                target.toggleClass('liked').html('✅');
+                targetCount.text(likeCount + 1);
             } else if (resultJSON.result === 'subtract') {
-                target.text(likeCount - 1);
-                console.log("done : subtract");
+                target.toggleClass('liked').html('👍');
+                targetCount.text(likeCount - 1);
             }
-            console.log("done : end");
         }).fail(function () {
-            console.log("fail");
             Swal.fire({
                 icon: '',
                 title: '오류가 발생하였습니다.',
