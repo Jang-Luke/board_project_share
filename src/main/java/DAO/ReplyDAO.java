@@ -26,14 +26,20 @@ public class ReplyDAO {
     }
 
     public int insertReply(ReplyDTO replyDTO) throws Exception {
-        String sql = "INSERT INTO REPLY VALUES(0, ?, ?, DEFAULT, ?, DEFAULT)";
+        String sql = "INSERT INTO REPLY VALUES(0, ?, ?, DEFAULT, ?)";
         try (Connection connection = basicDataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, replyDTO.getWriter());
             preparedStatement.setString(2, replyDTO.getContents());
             preparedStatement.setLong(3, replyDTO.getParentId());
             int result = preparedStatement.executeUpdate();
+            try(ResultSet resultSet = preparedStatement.getGeneratedKeys();){
+                resultSet.next();
+                result = resultSet.getInt(1);
+            }
+
             connection.commit();
+            System.out.println(result);
             return result;
         }
     }
