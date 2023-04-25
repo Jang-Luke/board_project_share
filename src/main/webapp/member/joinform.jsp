@@ -257,16 +257,46 @@
         }
     })
     $('#duplicationCheck').on('click', function() {
-        if (checkIdValidation()) {
-            window.open("/idDuplicationCheck.member?inId="+$('#inId').val(), "", "width=350px,height=250px");
-        } else{
-            Swal.fire({
-                title: '아이디를 다시 확인해주세요.',
-                icon: 'error',
-                showConfirmButton: false,
-                timer: 1000,
-            });
-        }
+        $.ajax({
+            url: "/idDuplicationCheck.member",
+            data: {
+                inId: $('#inId').val()
+            },
+            dataType: "json"
+        }).done((result) => {
+            if (result) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '중복된 아이디입니다.',
+                    showConfirmButton: false,
+                    timer: 600,
+                });
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: '사용 가능한 아이디입니다!',
+                    showConfirmButton: false,
+                    timer: 600,
+                });
+                $('#duplicationCheck').prop('disabled', true)
+                    .text('사용가능')
+                    .removeClass('btn-outline-primary')
+                    .addClass('btn-black');
+                $('#inPw').focus();
+            }
+        })
+
+
+        // if (checkIdValidation()) {
+        //     window.open("/idDuplicationCheck.member?inId="+$('#inId').val(), "", "width=350px,height=250px");
+        // } else{
+        //     Swal.fire({
+        //         title: '아이디를 다시 확인해주세요.',
+        //         icon: 'error',
+        //         showConfirmButton: false,
+        //         timer: 1000,
+        //     });
+        // }
     })
     const is_all_arguments_validate = function(){
         return checkIdValidation() && checkPwValidation() && checkNameValidation() && checkPhoneValidation() && checkEmailValidation();

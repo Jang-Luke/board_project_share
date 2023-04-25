@@ -65,8 +65,10 @@ public class MemberController extends HttpServlet {
                 MemberDAO memberDAO = MemberDAO.getInstance();
                 boolean result = true;
                 result = memberDAO.is_id_duplicate(id);
-                request.setAttribute("duplicateCheck", result);
-                request.getRequestDispatcher("/member/idCheckResult.jsp").forward(request, response);
+                response.getWriter().append(String.valueOf(result));
+
+//                request.setAttribute("duplicateCheck", result);
+//                request.getRequestDispatcher("/member/idCheckResult.jsp").forward(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
