@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 
 @WebServlet("*.board")
 public class BoardController extends HttpServlet {
+    private String XSSCheck(String text) {
+        return text.replaceAll("<script>", "&lt;script>");
+    }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String command = request.getRequestURI();
@@ -30,7 +33,9 @@ public class BoardController extends HttpServlet {
             if (command.equals("/insert.board")) {
                 String writer = request.getParameter("inWriter");
                 String title = request.getParameter("inTitle");
+                title.replaceAll("<script>", "&lt;script>");
                 String contents = request.getParameter("inContents");
+                contents.replaceAll("<script>", "&lt;script>");
                 BoardDTO newContents = new BoardDTO(0, writer, title, contents, 0, null);
                 int result = BoardDAO.getInstance().insertContent(newContents);
                 response.sendRedirect("/select.board?currentPage=1");
